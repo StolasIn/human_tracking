@@ -51,7 +51,7 @@ def capture():
         ok, img0=cam.read()
         if(ok):
             
-            results = model.track(img0, persist=True)
+            results = model.track(img0, persist=True, tracker="bytetrack.yaml")
             # result_frame = plot(results[0])
             result_frame = results[0].plot()
             ret, jpeg = cv2.imencode('.jpg', result_frame)
