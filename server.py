@@ -18,6 +18,30 @@ def shutdown_server():
     print('Release camera')
     cam.release()
 
+def is_in(select_xy, box):
+    if select_xy[0] > box[0] and select_xy[0] < box[2]:
+        if select_xy[1] > box[1] and select_xy[1] < box[3]:
+            return True
+    return False
+
+def update(results, deselect_map, select_xy = None):
+    if select_xy is None:
+        return deselect_map
+    
+    pred_boxes = results.boxes
+    for d in reversed(pred_boxes):
+        c, conf, id = int(d.cls), float(d.conf), None if d.id is None else int(d.id.item())
+        box = d.xyxy.squeeze()
+        if is_in(select_xy, box):
+            if id in deselect_map:
+                deselect_map.remove(id)
+            else:
+                deselect_map.add(id)
+            break
+
+    return deselect_map
+
+
 def plot(results, deselect_set):
     names = results.names
     pred_boxes, show_boxes = results.boxes, True
@@ -33,7 +57,7 @@ def plot(results, deselect_set):
     # Plot Detect results
     if pred_boxes and show_boxes:
         for d in reversed(pred_boxes):
-            c, conf, id = int(d.cls), float(d.conf) if conf else None, None if d.id is None else int(d.id.item())
+            c, conf, id = int(d.cls), float(d.conf), None if d.id is None else int(d.id.item())
             if names[c] != 'person' or id in deselect_set:
                 continue
             name = ('' if id is None else f'id:{id} ') + names[c]
@@ -44,15 +68,15 @@ def plot(results, deselect_set):
 
 def capture():
     frame_id = 0
-    deselect_set = set()
+    deselect_map = set()
+    select_xy = None
     while True:
         ok, img0=cam.read()
         if(ok):
-            
             results = model.track(img0, persist=True, tracker="bytetrack.yaml")
-            # print(results)
+            deselect_map = update(results[0], deselect_map, select_xy)
             
-            result_frame = results[0].plot()
+            result_frame = plot(results[0], deselect_map)
             ret, jpeg = cv2.imencode('.jpg', result_frame)
             frame =  jpeg.tobytes()
 
