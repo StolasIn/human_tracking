@@ -72,6 +72,7 @@ def capture():
     select_xy = None
     while True:
         ok, img0=cam.read()
+        img0 = cv2.flip(img0, 1)
         if(ok):
             results = model.track(img0, persist=True, tracker="bytetrack.yaml")
             deselect_map = update(results[0], deselect_map, select_xy)
