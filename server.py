@@ -18,15 +18,12 @@ def shutdown_server():
     print('Release camera')
     cam.release()
 
-def plot(results, deselect_map):
-    if img is None and isinstance(results.orig_img, torch.Tensor):
-        img = (results.orig_img[0].detach().permute(1, 2, 0).contiguous() * 255).to(torch.uint8).cpu().numpy()
-
+def plot(results, deselect_set):
     names = results.names
     pred_boxes, show_boxes = results.boxes, True
     pred_probs, show_probs = results.probs, True
     annotator = Annotator(
-        deepcopy(results.orig_img if img is None else img),
+        deepcopy(results.orig_img),
         2,
         2,
         'Arial.ttf',
@@ -37,7 +34,7 @@ def plot(results, deselect_map):
     if pred_boxes and show_boxes:
         for d in reversed(pred_boxes):
             c, conf, id = int(d.cls), float(d.conf) if conf else None, None if d.id is None else int(d.id.item())
-            if names[c] in deselect_map:
+            if names[c] != 'person' or id in deselect_set:
                 continue
             name = ('' if id is None else f'id:{id} ') + names[c]
             label = (f'{name} {conf:.2f}' if conf else name)
@@ -47,12 +44,14 @@ def plot(results, deselect_map):
 
 def capture():
     frame_id = 0
+    deselect_set = set()
     while True:
         ok, img0=cam.read()
         if(ok):
             
             results = model.track(img0, persist=True, tracker="bytetrack.yaml")
-            # result_frame = plot(results[0])
+            # print(results)
+            
             result_frame = results[0].plot()
             ret, jpeg = cv2.imencode('.jpg', result_frame)
             frame =  jpeg.tobytes()

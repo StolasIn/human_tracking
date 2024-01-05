@@ -15,7 +15,7 @@ if __name__ == '__main__':
     clean_and_mkdir('hls')
     (
         ffmpeg
-        .input(server_url, r=7.0) # r 表示接收的 framerate
+        .input(server_url, r=15.0) # r 表示接收的 framerate
         .output(
             'hls/hls.m3u8',
             format='hls',
@@ -23,7 +23,7 @@ if __name__ == '__main__':
             pix_fmt='yuv420p',
             preset='veryfast',
             g='10',
-            r=7.0,                # r 表示輸出的 framerate
+            r=15.0,                # r 表示輸出的 framerate
             fflags="nobuffer",
             flags="low_delay"
         )
