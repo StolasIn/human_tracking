@@ -15,8 +15,18 @@ if __name__ == '__main__':
     clean_and_mkdir('hls')
     (
         ffmpeg
-        .input(server_url)
-        .output('hls/hls.m3u8', format='hls', start_number=0, hls_time=1, hls_list_size=0)
+        .input(server_url, r=7.0)
+        .output(
+            'hls/hls.m3u8',
+            format='hls',
+            vcodec='libx264',
+            pix_fmt='yuv420p',
+            preset='veryfast',
+            g='10',
+            r=7.0,
+            fflags="nobuffer",
+            flags="low_delay"
+        )
         .global_args("-re") # argument to act as a live stream
         .run()
     )

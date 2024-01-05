@@ -1,28 +1,49 @@
+import ffmpeg
 import cv2
-import numpy as np
-import socket
-import struct
-from io import BytesIO
+import subprocess
 
-# Capture frame
-cap = cv2.VideoCapture(0)
+video_format = "flv"
+server_url = "http://localhost:8080"
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
-client_socket.connect(('140.113.214.61', 8089))
 
-while cap.isOpened():
-    _, frame = cap.read()
 
-    memfile = BytesIO()
-    np.save(memfile, frame)
-    memfile.seek(0)
-    data = memfile.read()
 
-    # Send form byte array: frame size + frame content
-    client_socket.sendall(struct.pack("I", len(data)) + data)
+def start_streaming(width, height,fps):
+    process = (
+        ffmpeg
+        .input('pipe:', format='rawvideo',codec="rawvideo", pix_fmt='bgr24', s='{}x{}'.format(width, height))
+        .output(
+            server_url + '/stream',
+            #codec = "copy", # use same codecs of the original video
+            listen=1, # enables HTTP server
+            pix_fmt="yuv420p",
+            preset="ultrafast",
+            f=video_format
+        )
+        .overwrite_output()
+        .run_async(pipe_stdin=True)
+    )
+    return process
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+def init_cap():
+    cap = cv2.VideoCapture(1)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    return cap, width, height
 
-cap.release()
+def run():
+    cap, width, height = init_cap()
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    streaming_process = start_streaming(width, height,fps)
+    while True:
+        ret, frame = cap.read()
+        if ret:
+            streaming_process.stdin.write(frame.tobytes())
+        else:
+            break
+    streaming_process.stdin.close()
+    streaming_process.wait()
+    cap.release()
+
+if __name__ == "__main__":
+    run()

@@ -19,6 +19,7 @@ def hls(*res):
         'g': 10
     }
     hls = video.hls(Formats.h264(video='libx264', audio='aac', **codec_options), hls_time=1)
+    hls.flags('-re')
     hls.representations(*res)
     hls.output('hls/hls.m3u8')
 
@@ -35,4 +36,4 @@ if __name__ == '__main__':
     _2k    = Representation(Size(2560, 1440), Bitrate(6144*1024, 320*1024))
     _4k    = Representation(Size(3840, 2160), Bitrate(17408*1024, 320*1024))
 
-    hls(_360p, _720p)
+    hls(_360p)
