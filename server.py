@@ -82,7 +82,6 @@ def capture():
         img0 = cv2.flip(img0, 1)
         if(ok):
             results = model.track(img0, persist=True, tracker="bytetrack.yaml", classes=0)
-            print(updated)
             deselect_map = update(results[0], deselect_map)
             updated = False
             
