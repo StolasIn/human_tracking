@@ -12,18 +12,21 @@ def clean_and_mkdir(dirname):
 
 
 if __name__ == '__main__':
+    fps = 10.0      # 接收與輸出的 fps
+    speed_up = 2    # 加速兩倍
     clean_and_mkdir('hls')
     (
         ffmpeg
-        .input(server_url, r=10.0) # r 表示接收的 framerate
+        .input(server_url, r=fps)
+        .setpts(f'{1/speed_up}*PTS')        
         .output(
             'hls/hls.m3u8',
             format='hls',
             vcodec='libx264',
             pix_fmt='yuv420p',
             preset='veryfast',
-            g='1',
-            r=10.0,                # r 表示輸出的 framerate
+            g='10',
+            r=str(fps*speed_up),
             fflags="nobuffer",
             flags="low_delay"
         )
