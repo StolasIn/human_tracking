@@ -13,7 +13,7 @@ def clean_and_mkdir(dirname):
 
 if __name__ == '__main__':
     fps = 10.0      # 接收與輸出的 fps
-    speed_up = 2    # 加速兩倍
+    speed_up = 1.2    # 加速兩倍
     clean_and_mkdir('hls')
     (
         ffmpeg
