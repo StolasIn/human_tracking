@@ -40,10 +40,10 @@ const timeElapsed = document.getElementById('time-elapsed');
 const duration = document.getElementById('duration');
 function formatTime(timeInSeconds) {
     try {
-        const result = new Date(timeInSeconds * 1000).toISOString().substring(11, 8);
+        const result = new Date(timeInSeconds * 1000).toISOString().substr(11, 8);
         return {
-            minutes: result.substring(3, 2),
-            seconds: result.substring(6, 2),
+            minutes: result.substr(3, 2),
+            seconds: result.substr(6, 2),
         };
     }
     catch (e) {
@@ -61,9 +61,11 @@ const progressBar = document.getElementById('progress-bar');
 const seek = document.getElementById('seek');
 function updateVideoInfo() {
     const videoDuration = Math.round(video.duration);
+    console.log(videoDuration)
     seek.setAttribute('max', videoDuration);
     progressBar.setAttribute('max', videoDuration);
     const time = formatTime(videoDuration);
+    console.log(time);
     duration.innerText = `${time.minutes}:${time.seconds}`;
     duration.setAttribute('datetime', `${time.minutes}m ${time.seconds}s`);
     video.playbackRate = 0.88;
@@ -110,89 +112,12 @@ function skipAhead(event) {
     seek.value = skipTo;
 }
 seek.addEventListener('input', skipAhead);
-
-// Volume control BEGIN
-const volumeButton = document.getElementById('volume-button');
-const volumeIcons = document.querySelectorAll('.volume-button use');
-const volumeMute = document.querySelector('use[href="#volume-mute"]');
-const volumeLow = document.querySelector('use[href="#volume-low"]');
-const volumeHigh = document.querySelector('use[href="#volume-high"]');
-const volume = document.getElementById('volume');
-
-function updateVolume() {
-    if (video.muted) {
-        video.muted = false;
-    }
-    video.volume = volume.value;
-}
-volume.addEventListener('input', updateVolume);
-
-function updateVolumeIcon() {
-    volumeIcons.forEach(icon => {
-        icon.classList.add('hidden');
-    });
-
-    volumeButton.setAttribute('data-title', 'Mute')
-
-    if (video.muted || video.volume === 0) {
-        volumeMute.classList.remove('hidden');
-        volumeButton.setAttribute('data-title', 'Unmute')
-    }
-    else if (video.volume > 0 && video.volume <= 0.5) {
-        volumeLow.classList.remove('hidden');
-    }
-    else {
-        volumeHigh.classList.remove('hidden');
-    }
-}
-video.addEventListener('volumechange', updateVolumeIcon);
-
-function toggleMute() {
-    video.muted = !video.muted;
-    if (video.muted) {
-        volume.setAttribute('data-volume', volume.value);
-        volume.value = 0;
-    }
-    else {
-        volume.value = volume.dataset.volume;
-    }
-}
-volumeButton.addEventListener('click', toggleMute);
-// Volume control END
 // UI END
 
 var server_ip, flask_port;
 server_ip = 'localhost';
 flask_port = '16034';
 
-
-// Shutdown START
-const shutdownButton = document.getElementById('shutdown-button');
-function shutdown() {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open('GET', `http://${server_ip}:${flask_port}/shutdown`, true);
-    xmlHttp.send(null);
-}
-shutdownButton.addEventListener('click', shutdown);
-// Shutdown END
-
-// Deselect START
-const deselectButton = document.getElementById('deselect-button');
-function deselect() {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open('GET', `http://${server_ip}:${flask_port}/data?coor=deselect`, true);
-    xmlHttp.send(null);
-    xmlHttp.onload = function () {
-        var logBox = document.getElementById('log-container');
-        var node = document.createElement('div');
-        var today = new Date();
-        node.innerHTML = `Deselect @ ${today.timeNow()}`;
-        node.setAttribute('class', 'log-elem')
-        logBox.insertBefore(node, logBox.firstChild);
-    }
-}
-deselectButton.addEventListener('click', deselect);
-// Deselect END
 
 // Click event START
 function getClickCoordinate(event) {
@@ -212,7 +137,7 @@ function getClickCoordinate(event) {
         var logBox = document.getElementById('log-container');
         var node = document.createElement('div');
         var today = new Date();
-        node.innerHTML = `Select #${JSON.parse(xmlHttp.responseText).target} @ ${today.timeNow()}`;
+        node.innerHTML = `Select #${JSON.parse(xmlHttp.responseText).position} @ ${today.timeNow()}`;
         node.setAttribute('class', 'log-elem')
         logBox.insertBefore(node, logBox.firstChild);
     }

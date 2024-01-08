@@ -31,7 +31,7 @@ body {
 
 .log-container {
   width: 200px;
-  height: 50%;
+  height: 82.5%;
   border-radius: 4px;
   margin: 0 auto 0 5px;
   background-color: rgb(231, 231, 231);
@@ -48,7 +48,7 @@ body {
 }
 
 .video-container {
-  width: 750px;
+  width: 700px;
   border-radius: 4px;
   margin: 0 5px 0 auto;
   position: relative;
@@ -147,18 +147,6 @@ progress::-moz-progress-bar {
   display: flex;
   align-items: center;
   margin-right: 10px;
-}
-
-.volume-controls input {
-  width: 100px;
-  opacity: 1;
-  transition: all 0.4s ease;
-}
-
-.volume-controls:hover input,
-.volume-controls input:focus {
-  width: 100px;
-  opacity: 1;
 }
 
 button {

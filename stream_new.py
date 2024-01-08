@@ -13,7 +13,7 @@ def clean_and_mkdir(dirname):
 
 if __name__ == '__main__':
     fps = 10.0      # 接收與輸出的 fps
-    speed_up = 1.0    # 加速兩倍
+    speed_up = 1.0    # 加速
     clean_and_mkdir('hls')
     (
         ffmpeg
@@ -29,7 +29,7 @@ if __name__ == '__main__':
             r=str(fps*speed_up),
             fflags="nobuffer",
             flags="low_delay",
-            segment_wrap = 10
+            hls_flags = 'delete_segments+append_list+split_by_time'
         )
         .global_args("-re")
         .run()

@@ -33,15 +33,6 @@
             </button>
 
             <div class="volume-controls">
-              <button data-title="Mute" class="volume-button" id="volume-button">
-                <svg>
-                  <use class="hidden" href="#volume-mute"></use>
-                  <use class="hidden" href="#volume-low"></use>
-                  <use href="#volume-high"></use>
-                </svg>
-              </button>
-
-              <input class="volume" id="volume" value="1" data-mute="0.5" type="range" max="1" min="0" step="0.01">
             </div>
 
             <div class="time">
@@ -53,22 +44,12 @@
 
           <div class="right-controls">
             <div class="shutdown">
-              <button data-title="Shutdown Flask server" class="normal-button" id="shutdown-button">
-                Shutdown
-              </button>
             </div>
 
             <div class="deselect">
-              <button data-title="Deselect object" class="normal-button" id="deselect-button">
-                Deselect
-              </button>
             </div>
 
             <div class="dropdown">
-              <button class="dropdown-button" id="dropdown-button" data-title="Quality">auto</button>
-              <div class="dropdown-content" id="dropdown-content">
-                <div level-idx="-1" onclick="setLevel(this)">auto</div>
-              </div>
             </div>
           </div>
         </div>

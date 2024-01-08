@@ -127,7 +127,7 @@ def get_mouse():
     global updated, select_xy
     updated = True
     select_xy = [float(x), float(y)]
-    return jsonify({'message': 'Position received successfully'})
+    return jsonify({'message': 'Position received successfully', 'position': f'({x}, {y})'})
 
 @app.route('/')
 def home():
