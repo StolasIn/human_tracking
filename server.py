@@ -40,10 +40,14 @@ def update(results, deselect_map):
         c, conf, id = int(d.cls), float(d.conf), None if d.id is None else int(d.id.item())
         box = d.xyxy.squeeze()
         if is_in(box):
+            print('deselect map is : ', deselect_map)
             if id in deselect_map:
                 deselect_map.remove(id)
+                print(f'track {id}')
             else:
                 deselect_map.add(id)
+                print(f'untrack {id}')
+            print('deselect map is : ', deselect_map)
             break
 
     return deselect_map
@@ -81,7 +85,7 @@ def capture():
         ok, img0=cam.read()
         img0 = cv2.flip(img0, 1)
         if(ok):
-            results = model.track(img0, persist=True, tracker="bytetrack.yaml", classes=0)
+            results = model.track(img0, persist=True, tracker="bytetrack.yaml", classes=0, verbose = False)
             deselect_map = update(results[0], deselect_map)
             updated = False
             
@@ -119,7 +123,7 @@ def get_mouse():
     coor=coor.split(',') # coor=[x,y,offsetLeft,offsetTop]
     x = coor[0]
     y = coor[1]
-    # print(f'x={x}, y={y}')
+    print(f'x={x}, y={y}')
     global updated, select_xy
     updated = True
     select_xy = [float(x), float(y)]
