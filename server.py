@@ -12,7 +12,7 @@ updated = False
 select_xy = None
 
 model = YOLO('yolov8n.pt')
-# model.to('cuda')
+model.to('cuda')
 app = Flask(__name__, template_folder='./')
 CORS(app)
 
@@ -47,7 +47,7 @@ def update(results, deselect_map):
             else:
                 deselect_map.add(id)
                 print(f'untrack {id}')
-            print('deselect map is : ', deselect_map)
+                print('deselect map is : ', deselect_map)
             break
 
     return deselect_map
@@ -123,16 +123,30 @@ def get_mouse():
     coor=coor.split(',') # coor=[x,y,offsetLeft,offsetTop]
     x = coor[0]
     y = coor[1]
-    print(f'x={x}, y={y}')
+    # print(f'x={x}, y={y}')
     global updated, select_xy
     updated = True
     select_xy = [float(x), float(y)]
-    return jsonify({'message': 'Position received successfully', 'position': f'({x}, {y})'})
+    return jsonify({'message': f'position received x={x}, y={y}'})
 
-@app.route('/')
+@app.route('/get_coordinates', methods=['POST'])
+def get_coordinates():
+    data = request.get_json()
+    x = data.get('x')
+    y = data.get('y')
+    global updated, select_xy
+    updated = True
+    select_xy = [float(x), float(y)]
+
+
+    print(f'x={x}, y={y}')
+
+    return jsonify({'message': 'Coordinates received successfully'})
+
+@app.route('/streaming', methods=['GET'])
 def home():
-    return render_template("index.html")
+    return render_template("streaming.html")
 
 if __name__ == '__main__':
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(0)   
     app.run(host='localhost', port=16034, debug=True)
