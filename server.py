@@ -119,6 +119,21 @@ def get_mouse():
 def home():
     return render_template("index.html")
 
+@app.route('/get_coordinates', methods=['POST'])
+def get_coordinates():
+    data = request.get_json()
+    x = data.get('x')
+    y = data.get('y')
+    global updated, select_xy
+    updated = True
+    select_xy = [float(x), float(y)]
+    print(f'x={x}, y={y}')
+    return jsonify({'message': 'Coordinates received successfully'})
+
+@app.route('/streaming', methods=['GET'])
+def home():
+    return render_template("streaming.html")
+
 if __name__ == '__main__':
     cam = cv2.VideoCapture(0)
     app.run(host='localhost', port=16034, debug=True)

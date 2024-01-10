@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .video-container {
+            width: 640px;
+            height: 480px;
+            margin: auto;
+        }
+
+        .video-container img {
+            width: 100%;
+            height: auto;
+        }
+        
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="grid-cols-8">
+                <!-- <h3 class="text-4xl text-center m-11">Live Streaming</h3> -->
+                <div class="video-container",  id="myContainer">
+                <img src="{{ url_for('video_feed') }}"  width="100%">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var container = $("#myContainer");
+            container.on('click', function (e) {
+                
+                var x = e.clientX+ window.scrollX - container.offset().left;
+                var y = e.clientY+ window.scrollY - container.offset().top;
+                x = x < 0 ? 0 : x;
+                y = y < 0 ? 0 : y;
+
+                // Send the click coordinates to the server
+                $.ajax({
+                    type: 'POST',
+                    url: '/get_coordinates',
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify({x: x, y: y}),
+                    success: function (response) {
+                        console.log(response);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
