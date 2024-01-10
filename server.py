@@ -16,15 +16,6 @@ model = YOLO('yolov8n.pt')
 app = Flask(__name__, template_folder='./')
 CORS(app)
 
-
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-    print('Release camera')
-    cam.release()
-
 def is_in(box):
     if select_xy[0] > box[0] and select_xy[0] < box[2]:
         if select_xy[1] > box[1] and select_xy[1] < box[3]:
@@ -85,7 +76,7 @@ def capture():
         ok, img0=cam.read()
         img0 = cv2.flip(img0, 1)
         if(ok):
-            results = model.track(img0, persist=True, tracker="bytetrack.yaml", classes=0, verbose = False)
+            results = model.track(img0, persist=True, tracker="default.yaml", classes=0, verbose = False)
             deselect_map = update(results[0], deselect_map)
             updated = False
             
@@ -111,11 +102,6 @@ def add_header(response):
 @app.route('/video_feed')
 def video_feed():
     return Response(capture(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/shutdown', methods=['GET'])
-def shutdown():
-    shutdown_server()
-    return 'Flask server shutting down...'
 
 @app.route('/data', methods=['GET'])
 def get_mouse():
